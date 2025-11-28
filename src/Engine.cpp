@@ -32,5 +32,15 @@ bool Engine::init(){
 }
 
 void Engine::stop(){
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
+}
+
+bool Engine::isRunning(){
+    return _running;
+}
+
+void Engine::handleInput(Player &player,const Map &map){
 
 }
