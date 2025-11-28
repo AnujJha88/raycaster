@@ -38,3 +38,19 @@ void Player::turn(double angle){
     planeX=newPlaneX;
     planeY=newPlaneY;
 }
+
+void Player::moveForward(const Map& map){
+ move(movement_speed*dirX,movement_speed*dirY,map);
+}
+
+void Player::moveBackward(const Map& map){
+    move(-movement_speed*dirX,-movement_speed*dirY,map);
+}
+
+void Player::moveRight(const Map& map){
+    move(dirY*movement_speed,-dirX*movement_speed,map);
+}
+
+void Player::moveLeft(const Map& map){
+    move(-dirY*movement_speed,dirX*movement_speed,map);
+}

@@ -14,4 +14,9 @@ public:
 
     const double movement_speed=1.0;
     const double turn_speed=0.1;
+
+    void moveForward( const Map &map);
+    void moveBackward( const Map &map);
+    void moveLeft( const Map &map);
+    void moveRight( const Map &map);
 };
