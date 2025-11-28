@@ -1,0 +1,68 @@
+#include "Map.h"
+#include <random>
+#include<cstring>
+
+
+Map::Map(bool random){
+    if(random)Map::generateRandom();
+    else{
+        int tempMap[WIDTH][HEIGHT] = {
+            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+            {1,0,0,0,0,0,2,2,2,2,2,0,0,0,0,3,0,3,0,3,0,0,0,1},
+            {1,0,0,0,0,0,2,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,1},
+            {1,0,0,0,0,0,2,0,0,0,2,0,0,0,0,3,0,0,0,3,0,0,0,1},
+            {1,0,0,0,0,0,2,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,1},
+            {1,0,0,0,0,0,2,2,0,2,2,0,0,0,0,3,0,3,0,3,0,0,0,1},
+            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+            {1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+            {1,1,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+            {1,1,0,0,0,0,5,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+            {1,1,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+            {1,1,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+            {1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
+        };
+        memcpy(worldMap,tempMap,sizeof(worldMap));
+    }
+}
+
+void Map::generateRandom(){
+    std::random_device rd;//this gives us a non deterministic seed
+    std::mt19937 gen(rd());//this is the Mersenne Twister
+    std::uniform_int_distribution<> densityDist(0,100);//wall density
+    std::uniform_int_distribution<> colorDist(1,4);//we have 4 choices for color of walls(0 being no wall,1-4 being walls)
+
+    for(int x=0;x<WIDTH;x++){
+        int y=0;y<HEIGHT;y++){
+            // we must have the borders be walls otherwise the light escapes
+            if(x==0||y==0||x==WIDTH-1||y==HEIGHT-1){
+                worldMap[x][y]=colorDist(gen);
+            }
+            //make sure the spawn is not walled in and we are stuck
+//spawn is 20,12
+            else if(x>18 && y>10 && x<22 && y<14){
+                worldMap[x][y]=colorDist(gen);
+            }
+            else{
+                if(densityDist(gen)<=20)worldMap[x][y]=colorDist(gen);
+                else worldMap[x][y]=0;
+            }
+        }
+    }
+
+}
+
+int Map::getTile(int x, int y) const {
+    // Boundary check
+    if (x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT) return 0;
+    return worldMap[x][y];
+}
