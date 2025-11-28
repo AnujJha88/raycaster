@@ -1,5 +1,6 @@
 #include "Engine.h"
 #include <SDL2/SDL_error.h>
+#include <SDL2/SDL_keyboard.h>
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_video.h>
 #include<iostream>
@@ -42,5 +43,21 @@ bool Engine::isRunning(){
 }
 
 void Engine::handleInput(Player &player,const Map &map){
+    SDL_Event e;
+    while(SDL_PollEvent(&e)!=0){
+        if(e.type==SDL_QUIT){
+            //quit
+        _running=false;
+        }
+
+    }
+   const Uint8* currentKeyState=SDL_GetKeyboardState(NULL);
+    if(currentKeyState[SDL_SCANCODE_W])player.moveForward(map);
+    if(currentKeyState[SDL_SCANCODE_S])player.moveBackward(map);
+    if(currentKeyState[SDL_SCANCODE_A])player.moveLeft(map);
+    if(currentKeyState[SDL_SCANCODE_D])player.moveRight(map);
+    if(currentKeyState[SDL_SCANCODE_LEFT])player.turn(player.turn_speed);
+    if(currentKeyState[SDL_SCANCODE_RIGHT])player.turn(-player.turn_speed);
+
 
 }
