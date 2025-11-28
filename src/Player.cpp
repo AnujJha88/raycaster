@@ -26,5 +26,15 @@ void Player::move(double dx,double dy, const Map &map){
 }
 
 void Player::turn(double angle){
+    double newDirX=dirX*cos(angle)-dirY*sin(angle);
+    double newDirY=dirX*sin(angle)+dirY*cos(angle);
 
+    dirX=newDirX;
+    dirY=newDirY;
+
+    double newPlaneX=planeX*cos(angle)-planeY*sin(angle);
+    double newPlaneY=planeX*sin(angle)+planeY*cos(angle);
+
+    planeX=newPlaneX;
+    planeY=newPlaneY;
 }
