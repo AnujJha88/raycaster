@@ -42,7 +42,7 @@ bool Engine::isRunning(){
     return _running;
 }
 
-void Engine::handleInput(Player &player,const Map &map){
+void Engine::handleInput(Player &player, Map &map){
     SDL_Event e;
     while(SDL_PollEvent(&e)!=0){
         if(e.type==SDL_QUIT){
@@ -58,6 +58,7 @@ void Engine::handleInput(Player &player,const Map &map){
     if(currentKeyState[SDL_SCANCODE_D])player.moveRight(map);
     if(currentKeyState[SDL_SCANCODE_LEFT])player.turn(-player.turn_speed);
     if(currentKeyState[SDL_SCANCODE_RIGHT])player.turn(player.turn_speed);
+    if(currentKeyState[SDL_SCANCODE_SPACE])player.Interact(map);
 
 
 }

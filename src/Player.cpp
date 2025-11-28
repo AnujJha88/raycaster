@@ -54,3 +54,12 @@ void Player::moveLeft(const Map& map){
 void Player::moveRight(const Map& map){
     move(-dirY*movement_speed,dirX*movement_speed,map);
 }
+
+void Player::Interact( Map &map){
+    int targetX=int(posX+dirX);
+    int targetY=int(posY+dirY);
+
+    if(map.getTile(targetX,targetY)==-1){
+        map.update(targetX,targetY,0);
+    }
+}

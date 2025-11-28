@@ -8,6 +8,7 @@ public:
 
     void generateRandom();
     int getTile(int x,int y)const;
+    void update(int x,int y, int color);
 private:
     int worldMap[WIDTH][HEIGHT];
 };

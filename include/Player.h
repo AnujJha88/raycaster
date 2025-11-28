@@ -19,4 +19,7 @@ public:
     void moveBackward( const Map &map);
     void moveLeft( const Map &map);
     void moveRight( const Map &map);
+
+    void Interact( Map &map );
+
 };

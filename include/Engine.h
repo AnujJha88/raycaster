@@ -7,7 +7,7 @@ class Engine{
 public:
     Engine();
     void render(const Map& map, const Player& player);
-    void handleInput(Player& player, const Map& map);
+    void handleInput(Player& player, Map& map);
     void update();
     bool init();
 

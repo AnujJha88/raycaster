@@ -5,7 +5,7 @@
 int main(){
     Engine engine;
     Player player;
-    Map map(true);
+    Map map(false);
     if(!engine.init()){return 1;}
     while(engine.isRunning()){
         std::cout << "Pos: " << player.posX << ", " << player.posY
