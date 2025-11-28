@@ -42,7 +42,7 @@ void Map::generateRandom(){
     std::uniform_int_distribution<> colorDist(1,4);//we have 4 choices for color of walls(0 being no wall,1-4 being walls)
 
     for(int x=0;x<WIDTH;x++){
-        int y=0;y<HEIGHT;y++){
+        for(int y=0;y<HEIGHT;y++){
             // we must have the borders be walls otherwise the light escapes
             if(x==0||y==0||x==WIDTH-1||y==HEIGHT-1){
                 worldMap[x][y]=colorDist(gen);
@@ -50,7 +50,7 @@ void Map::generateRandom(){
             //make sure the spawn is not walled in and we are stuck
 //spawn is 20,12
             else if(x>18 && y>10 && x<22 && y<14){
-                worldMap[x][y]=colorDist(gen);
+                worldMap[x][y]=0;
             }
             else{
                 if(densityDist(gen)<=20)worldMap[x][y]=colorDist(gen);

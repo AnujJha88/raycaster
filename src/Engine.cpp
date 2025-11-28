@@ -27,7 +27,7 @@ bool Engine::init(){
 
     }
     else{
-        cout<<"Failed to initialise SDL"<<endl;
+        std::cout<<"Failed to initialise SDL"<<std::endl;
         return false;
     }
 }
@@ -56,9 +56,100 @@ void Engine::handleInput(Player &player,const Map &map){
     if(currentKeyState[SDL_SCANCODE_S])player.moveBackward(map);
     if(currentKeyState[SDL_SCANCODE_A])player.moveLeft(map);
     if(currentKeyState[SDL_SCANCODE_D])player.moveRight(map);
-    if(currentKeyState[SDL_SCANCODE_LEFT])player.turn(player.turn_speed);
-    if(currentKeyState[SDL_SCANCODE_RIGHT])player.turn(-player.turn_speed);
+    if(currentKeyState[SDL_SCANCODE_LEFT])player.turn(-player.turn_speed);
+    if(currentKeyState[SDL_SCANCODE_RIGHT])player.turn(player.turn_speed);
 
 
 }
 
+void Engine::render( const Map& map,const Player& player){
+    SDL_SetRenderDrawColor(renderer,30,30,30,255);
+    SDL_Rect ceilRect={0,0,SCREEN_WIDTH,SCREEN_HEIGHT/2};
+    SDL_RenderFillRect(renderer,&ceilRect);
+    SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255); // Light Gray
+    SDL_Rect floorRect = {0, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT / 2};
+    SDL_RenderFillRect(renderer, &floorRect);
+
+    for(int x=0;x<SCREEN_WIDTH;x++){
+       double cameraX= -1+double(2*x)/(double(SCREEN_WIDTH));
+        double rayX= player.dirX+player.planeX*cameraX;
+        double rayY= player.dirY+player.planeY*cameraX;
+
+        int mapX=int(player.posX);
+        int mapY=int(player.posY);
+
+        double deltaDistX=std::abs(1/rayX);
+        double deltaDistY=std::abs(1/rayY);
+
+        int stepX=rayX>0?1:-1;
+        int stepY=rayY>0?1:-1;
+
+        double sideDistX=(rayX<0?player.posX-mapX:-player.posX+mapX+1.0)*deltaDistX;
+        double sideDistY=(rayY<0?player.posY-mapY:-player.posY+mapY+1.0)*deltaDistY;
+
+        int hit=0;
+        int side=0;
+        while(hit==0){
+           if(sideDistX<sideDistY){
+                sideDistX+=deltaDistX;
+                mapX+=stepX;
+                side=0;
+            }
+
+            else{
+                sideDistY+=deltaDistY;
+                mapY+=stepY;
+                side=1;
+            }
+            hit=map.getTile(mapX,mapY);
+        }
+
+        double perpWallDist=side==0?sideDistX-deltaDistX:sideDistY-deltaDistY;
+
+        int lineHeight= int(SCREEN_HEIGHT/perpWallDist);
+
+        int drawStart=std::max(0,(SCREEN_HEIGHT-lineHeight)/2);
+        int drawEnd=std::min(SCREEN_HEIGHT-1,(SCREEN_HEIGHT+lineHeight)/2);
+
+        int tile=map.getTile(mapX,mapY);
+        Uint8 r,g,b;
+        switch(tile){
+            case 1:
+                r=255;
+                g=0;
+                b=0;
+                break;
+            case 2:
+                r=0;
+                g=255;
+                b=0;
+                break;
+            case 3:
+                r=0;
+                g=100;
+                b=255;
+                break;
+            default:
+                r=255;
+                g=255;
+                b=255;
+                break;
+        }
+
+        if(side==1){
+            r/=2;
+            g/=2;
+            b/=2;
+        }
+        SDL_SetRenderDrawColor(renderer, r, g, b, 255);
+        SDL_RenderDrawLine(renderer, x, drawStart, x, drawEnd);
+    }
+
+
+    SDL_RenderPresent(renderer);
+}
+
+Engine::~Engine(){
+                 Engine::stop();
+
+}

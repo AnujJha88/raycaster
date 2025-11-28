@@ -1,5 +1,5 @@
 #include "Player.h"
-
+#include<cmath>
 
 Player::Player(){
     posX=20,posY=12,dirX=1,dirY=0,planeX=0,planeY=0.66;
@@ -26,14 +26,14 @@ void Player::move(double dx,double dy, const Map &map){
 }
 
 void Player::turn(double angle){
-    double newDirX=dirX*cos(angle)-dirY*sin(angle);
-    double newDirY=dirX*sin(angle)+dirY*cos(angle);
+    double newDirX=dirX*std::cos(angle)-dirY*std::sin(angle);
+    double newDirY=dirX*std::sin(angle)+dirY*std::cos(angle);
 
     dirX=newDirX;
     dirY=newDirY;
 
-    double newPlaneX=planeX*cos(angle)-planeY*sin(angle);
-    double newPlaneY=planeX*sin(angle)+planeY*cos(angle);
+    double newPlaneX=planeX*std::cos(angle)-planeY*std::sin(angle);
+    double newPlaneY=planeX*std::sin(angle)+planeY*std::cos(angle);
 
     planeX=newPlaneX;
     planeY=newPlaneY;
@@ -47,10 +47,10 @@ void Player::moveBackward(const Map& map){
     move(-movement_speed*dirX,-movement_speed*dirY,map);
 }
 
-void Player::moveRight(const Map& map){
+void Player::moveLeft(const Map& map){
     move(dirY*movement_speed,-dirX*movement_speed,map);
 }
 
-void Player::moveLeft(const Map& map){
+void Player::moveRight(const Map& map){
     move(-dirY*movement_speed,dirX*movement_speed,map);
 }
