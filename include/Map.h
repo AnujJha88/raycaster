@@ -10,4 +10,4 @@ public:
     int getTile(int x,int y)const;
 private:
     int worldMap[WIDTH][HEIGHT];
-}
+};
