@@ -8,7 +8,7 @@ Player::Player(){
 void Player::move(double dx,double dy, const Map &map){
     double newX=posX+dx;
 
-    if(map.getTile(int(newX),int(posY))==0)
+    if(!map.isTileSolid(int(newX),int(posY)))
     {
         //this is a safe square
         posX=newX;
@@ -16,7 +16,7 @@ void Player::move(double dx,double dy, const Map &map){
 
 
     double newY=posY+dy;
-    if(map.getTile(int(posX),int(newY))==0)
+    if(!map.isTileSolid(int(posX),int(newY)))
     {
         //this is a safe square
         posY=newY;
@@ -59,7 +59,12 @@ void Player::Interact( Map &map){
     int targetX=int(posX+dirX);
     int targetY=int(posY+dirY);
 
-    if(map.getTile(targetX,targetY)==-1){
-        map.update(targetX,targetY,0);
+    Door* door=map.getDoor(targetX,targetY);
+    if(!door)return;
+
+    if(door->state== DoorState::CLOSED) door->state= DoorState::OPENING;
+    else{
+        door->timer=3.0;
+        door->state=DoorState::OPEN;
     }
 }

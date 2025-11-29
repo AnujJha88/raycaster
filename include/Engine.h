@@ -6,9 +6,9 @@
 class Engine{
 public:
     Engine();
-    void render(const Map& map, const Player& player);
+    void render( Map& map, const Player& player);
     void handleInput(Player& player, Map& map);
-    void update();
+    void update(Map& map);
     bool init();
 
     void stop();

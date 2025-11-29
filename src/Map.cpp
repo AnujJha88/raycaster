@@ -32,6 +32,15 @@ Map::Map(bool random){
             {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
         };
         memcpy(worldMap,tempMap,sizeof(worldMap));
+        for(int x=0;x<WIDTH;x++){
+            for(int y=0;y<HEIGHT;y++){
+                if(worldMap[x][y]==-1){
+                    worldMap[x][y]=99;
+                    Door door{0.0,x,y,DoorState::CLOSED,33.0};
+                    activeDoors.push_back(door);
+                }
+            }
+        }
     }
 }
 
@@ -64,9 +73,33 @@ void Map::generateRandom(){
 int Map::getTile(int x, int y) const {
     // Boundary check
     if (x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT) return 0;
-    return worldMap[x][y];
+    if(worldMap[x][y]==99){
+        Door* door=getDoor(x,y);
+
+    }
+    else return worldMap[x][y];
 }
 
 void Map::update(int x,int y,int color){
     worldMap[x][y]=color;
+}
+
+Door* Map::getDoor(int X, int Y){
+    for(auto& door:activeDoors){
+        if(door.locX==X && door.locY==Y){
+            return &door;
+        }
+    }
+    return nullptr;
+}
+
+bool Map::isTileSolid(int X, int Y){
+    int tile=map.getTile(X,Y);
+    if(tile==0)return false;
+    if(tile==99) {
+        Door* door=map.getDoor(X,Y);
+        if (door->state!= DoorState::CLOSED) return false;
+        else return true;
+    }
+    return true;
 }

@@ -63,7 +63,7 @@ void Engine::handleInput(Player &player, Map &map){
 
 }
 
-void Engine::render( const Map& map,const Player& player){
+void Engine::render(  Map& map,const Player& player){
     SDL_SetRenderDrawColor(renderer,30,30,30,255);
     SDL_Rect ceilRect={0,0,SCREEN_WIDTH,SCREEN_HEIGHT/2};
     SDL_RenderFillRect(renderer,&ceilRect);
@@ -102,7 +102,34 @@ void Engine::render( const Map& map,const Player& player){
                 mapY+=stepY;
                 side=1;
             }
-            hit=map.getTile(mapX,mapY);
+
+            int tile=map.getTile(mapX,mapY);
+            if(tile==99)
+            {
+                //door
+                Door* door= map.getDoor(mapX,mapY);
+                if(!door)hit=tile;
+                if(side==0){
+                    double Y_hit=player.posY+(sideDistX-deltaDistX)/rayX*rayY;
+                    double Y_frac=Y_hit-int(Y_hit);
+                    if(Y_frac<door->openAmount){
+                        hit=0;
+                    }
+                }
+                if(side==1){
+                    double X_hit=player.posX+(sideDistY-deltaDistY)/rayY*rayX;
+                    double X_frac=X_hit-int(X_hit);
+                    if(X_frac<door->openAmount){
+                        hit=0;
+                    }
+                }
+
+
+            }
+            else if (tile>0){
+                hit=tile;
+            }
+
         }
 
         double perpWallDist=side==0?sideDistX-deltaDistX:sideDistY-deltaDistY;
@@ -153,4 +180,45 @@ void Engine::render( const Map& map,const Player& player){
 Engine::~Engine(){
                  Engine::stop();
 
+}
+
+void Engine::update(Map& map){
+ static int32_t lastTime=0;
+    uint32_t currTime=SDL_GetTicks();
+    float deltaTime=(currTime-lastTime)/1000.0f;
+    lastTime=currTime;
+
+    for (auto& door: map.getDoors()){
+        switch(door.state){
+            case DoorState::OPENING:
+              door.openAmount+=1.0*deltaTime;
+            if(door.openAmount>=1){
+                    door.state=DoorState::OPEN;
+                    door.openAmount=1;
+                    break;
+                }
+            break;
+            case DoorState::OPEN:
+                if(door.timer>0){
+                    door.timer-=1.0*deltaTime;
+                    if(door.timer<0){
+                        door.state=DoorState::CLOSING;
+                        door.timer=0;
+                    }
+                }
+
+                break;
+            case DoorState::CLOSING:
+                door.openAmount-=1.0*deltaTime;
+                if(door.openAmount<=0){
+                    door.state=DoorState::CLOSED;
+                    door.openAmount=0;
+                    break;
+                }
+                break;
+            case DoorState::CLOSED:
+                break;
+
+        }
+    }
 }
