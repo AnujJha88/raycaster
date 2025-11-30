@@ -55,16 +55,21 @@ void Player::moveRight(const Map& map){
     move(-dirY*movement_speed,dirX*movement_speed,map);
 }
 
-void Player::Interact( Map &map){
+void Player::Interact(Map& map){
     int targetX=int(posX+dirX);
     int targetY=int(posY+dirY);
 
-    Door* door=map.getDoor(targetX,targetY);
-    if(!door)return;
-
-    if(door->state== DoorState::CLOSED) door->state= DoorState::OPENING;
-    else{
-        door->timer=3.0;
-        door->state=DoorState::OPEN;
+    Door* door= map.getDoor(targetX,targetY);
+if (!door) return;
+    if(door->state==DoorState::CLOSED){
+        door->state=DoorState::OPENING;
+        door->openAmount=0.0;
     }
+    else if(door->state == DoorState::CLOSING){
+        door->state = DoorState::OPENING;
+    }
+    else if(door->state==DoorState::OPEN){
+        door->timer=3.0;
+    }
+
 }

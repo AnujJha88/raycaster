@@ -49,7 +49,11 @@ void Engine::handleInput(Player &player, Map &map){
             //quit
         _running=false;
         }
-
+        else if(e.type == SDL_KEYDOWN){
+            if(e.key.keysym.sym == SDLK_SPACE){
+                player.Interact(map);
+            }
+        }
     }
    const Uint8* currentKeyState=SDL_GetKeyboardState(NULL);
     if(currentKeyState[SDL_SCANCODE_W])player.moveForward(map);
@@ -58,7 +62,6 @@ void Engine::handleInput(Player &player, Map &map){
     if(currentKeyState[SDL_SCANCODE_D])player.moveRight(map);
     if(currentKeyState[SDL_SCANCODE_LEFT])player.turn(-player.turn_speed);
     if(currentKeyState[SDL_SCANCODE_RIGHT])player.turn(player.turn_speed);
-    if(currentKeyState[SDL_SCANCODE_SPACE])player.Interact(map);
 
 
 }
@@ -108,30 +111,32 @@ void Engine::render(  Map& map,const Player& player){
 
             int tile=map.getTile(mapX,mapY);
             if(tile==99)
-            {
-                //door
-                Door* door= map.getDoor(mapX,mapY);
-                if(!door)hit=tile;
-                if(side==0){
-                    double Y_hit=player.posY+(sideDistX-deltaDistX)/rayX*rayY;
-                    double Y_frac=Y_hit-int(Y_hit);
-                    if(Y_frac<door->openAmount){
-                        hit=0;
-                    }
-                    else hit=99;
-                }
-                if(side==1){
-                    double X_hit=player.posX+(sideDistY-deltaDistY)/rayY*rayX;
-                    double X_frac=X_hit-int(X_hit);
-                    if(X_frac<door->openAmount){
-                        hit=0;
-                    }
-                    else hit=99;
-                }
+        {
+        Door* door = map.getDoor(mapX, mapY);
 
-
+        if(door)     {
+            if(side==0){
+                double Y_hit=player.posY+(sideDistX-deltaDistX)/rayX*rayY;
+                double Y_frac=Y_hit-int(Y_hit);
+                if(Y_frac < door->openAmount){
+                    hit=0;
+                }
+                else hit=99;
             }
-            else if (tile>0){
+            else if(side==1){
+                double X_hit=player.posX+(sideDistY-deltaDistY)/rayY*rayX;
+                double X_frac=X_hit-int(X_hit);
+                if(X_frac < door->openAmount){
+                    hit=0;
+                }
+                else hit=99;
+            }
+        }
+        else
+        {
+            hit = 99;
+        }
+}          else if (tile>0){
                 hit=tile;
             }
 
@@ -194,35 +199,38 @@ void Engine::update(Map& map){
     float deltaTime=(currTime-lastTime)/1000.0f;
     lastTime=currTime;
 
+    if(deltaTime>=0.1f)deltaTime=0.1f;// clamp to solve instant opening
     for (auto& door: map.getDoors()){
         switch(door.state){
             case DoorState::OPENING:
               door.openAmount+=1.0*deltaTime;
             if(door.openAmount>=1){
                     door.state=DoorState::OPEN;
-                    door.openAmount=1;
+                    door.openAmount=1.0;
+                    door.timer=3.0;
                     break;
+
                 }
             break;
             case DoorState::OPEN:
                 if(door.timer>0){
                     door.timer-=1.0*deltaTime;
-                    if(door.timer<0){
-                        door.state=DoorState::CLOSING;
-                        door.timer=0;
-                    }
-                }
+                                   }
 
+                else{
+                    door.state=DoorState::CLOSING;
+                    door.timer=0;
+                }
                 break;
             case DoorState::CLOSING:
                 door.openAmount-=1.0*deltaTime;
                 if(door.openAmount<=0){
                     door.state=DoorState::CLOSED;
                     door.openAmount=0;
-                    break;
                 }
                 break;
             case DoorState::CLOSED:
+                door.openAmount=0.0;
                 break;
 
         }

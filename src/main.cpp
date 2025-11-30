@@ -5,13 +5,13 @@
 int main(){
     Engine engine;
     Player player;
-    Map map(false);
+    Map map(true);
     if(!engine.init()){return 1;}
     while(engine.isRunning()){
         std::cout << "Pos: " << player.posX << ", " << player.posY
           << " | Dir: " << player.dirX << ", " << player.dirY << std::endl;
         engine.handleInput(player,map);
-
+        engine.update(map);
         engine.render(map,player);
     }
 return 0;
