@@ -10,7 +10,7 @@ public:
     void handleInput(Player& player, Map& map);
     void update(Map& map);
     bool init();
-
+    void renderMinimap(const Map& map, const Player& player);
     void stop();
     bool isRunning();
     ~Engine();
@@ -18,6 +18,6 @@ private:
     SDL_Window* window;
     SDL_Renderer* renderer;
     bool _running;
-    const int SCREEN_WIDTH=640;
-    const int SCREEN_HEIGHT=640;
+    const int SCREEN_WIDTH=1200;
+    const int SCREEN_HEIGHT=800;
 };

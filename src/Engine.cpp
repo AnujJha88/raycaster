@@ -184,6 +184,7 @@ void Engine::render(  Map& map,const Player& player){
         SDL_RenderDrawLine(renderer, x, drawStart, x, drawEnd);
     }
 
+renderMinimap(map, player);
 
     SDL_RenderPresent(renderer);
 }
@@ -235,4 +236,48 @@ void Engine::update(Map& map){
 
         }
     }
+}
+
+void Engine::renderMinimap(const Map& map, const Player& player){
+
+    int tileSize=2;
+    int startX=SCREEN_WIDTH- Map::WIDTH*tileSize-10;
+    int startY=10;
+
+    SDL_Rect bgRect={startX,startY,Map::WIDTH*tileSize, Map::HEIGHT*tileSize};
+    SDL_SetRenderDrawColor(renderer,0,0,0,255);
+    SDL_RenderFillRect(renderer,&bgRect);
+
+    for(int x = 0; x < Map::WIDTH; x++) {
+        for(int y = 0; y < Map::HEIGHT; y++) {
+            int tile = map.getTile(x, y);
+            if(tile > 0 && tile != 99) {
+                SDL_Rect tileRect = {startX + (x * tileSize), startY + (y * tileSize), tileSize, tileSize};
+
+                switch(tile){
+                    case 1: SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); break;
+                    case 2: SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255); break;
+                    case 3: SDL_SetRenderDrawColor(renderer, 0, 100, 255, 255); break;
+                    default: SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); break;
+                }
+                SDL_RenderFillRect(renderer, &tileRect);
+            }
+        }
+    }
+
+    for(int x = 0; x < Map::WIDTH; x++) {
+        for(int y = 0; y < Map::HEIGHT; y++) {
+            if (map.getTile(x,y) == 99) {
+                 SDL_Rect doorRect = {startX + (x * tileSize), startY + (y * tileSize), tileSize, tileSize};
+                 SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
+                 SDL_RenderFillRect(renderer, &doorRect);
+            }
+        }
+    }
+    SDL_Rect playerRect = {
+        startX + int(player.posX * tileSize) - 1,
+        startY + int(player.posY * tileSize) - 1,
+        4, 4     };
+    SDL_SetRenderDrawColor(renderer, 255, 0, 255, 255);
+    SDL_RenderFillRect(renderer, &playerRect);
 }
