@@ -87,7 +87,7 @@ void Engine::render(  Map& map,const Player& player){
 
         double sideDistX=(rayX<0?player.posX-mapX:-player.posX+mapX+1.0)*deltaDistX;
         double sideDistY=(rayY<0?player.posY-mapY:-player.posY+mapY+1.0)*deltaDistY;
-
+        double perpWallDist;
         int hit=0;
         int side=0;
         while(hit==0){
@@ -103,6 +103,9 @@ void Engine::render(  Map& map,const Player& player){
                 side=1;
             }
 
+         perpWallDist=side==0?sideDistX-deltaDistX:sideDistY-deltaDistY;
+
+
             int tile=map.getTile(mapX,mapY);
             if(tile==99)
             {
@@ -115,6 +118,7 @@ void Engine::render(  Map& map,const Player& player){
                     if(Y_frac<door->openAmount){
                         hit=0;
                     }
+                    else hit=99;
                 }
                 if(side==1){
                     double X_hit=player.posX+(sideDistY-deltaDistY)/rayY*rayX;
@@ -122,6 +126,7 @@ void Engine::render(  Map& map,const Player& player){
                     if(X_frac<door->openAmount){
                         hit=0;
                     }
+                    else hit=99;
                 }
 
 
@@ -131,17 +136,13 @@ void Engine::render(  Map& map,const Player& player){
             }
 
         }
-
-        double perpWallDist=side==0?sideDistX-deltaDistX:sideDistY-deltaDistY;
-
         int lineHeight= int(SCREEN_HEIGHT/perpWallDist);
 
         int drawStart=std::max(0,(SCREEN_HEIGHT-lineHeight)/2);
         int drawEnd=std::min(SCREEN_HEIGHT-1,(SCREEN_HEIGHT+lineHeight)/2);
 
-        int tile=map.getTile(mapX,mapY);
         Uint8 r,g,b;
-        switch(tile){
+        switch(hit){
             case 1:
                 r=255;
                 g=0;
@@ -156,6 +157,11 @@ void Engine::render(  Map& map,const Player& player){
                 r=0;
                 g=100;
                 b=255;
+                break;
+            case 99:
+                r=150;
+                b=30;
+                g=70;
                 break;
             default:
                 r=255;

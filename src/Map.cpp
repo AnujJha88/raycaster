@@ -70,21 +70,23 @@ void Map::generateRandom(){
 
 }
 
-int Map::getTile(int x, int y) const {
-    // Boundary check
-    if (x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT) return 0;
-    if(worldMap[x][y]==99){
-        Door* door=getDoor(x,y);
+int Map::getTile(int x, int y) const{
+    if(x<0||x>=WIDTH||y<0||y>=HEIGHT) return 0;
 
+    if(worldMap[x][y]==99){
+        const Door* door=getDoor(x,y);
+
+        if(door&& door->state!=DoorState::CLOSED)return 0;
+        else return 99;
     }
-    else return worldMap[x][y];
+    return worldMap[x][y];
 }
 
 void Map::update(int x,int y,int color){
     worldMap[x][y]=color;
 }
 
-Door* Map::getDoor(int X, int Y){
+Door* Map::getDoor(int X, int Y) {
     for(auto& door:activeDoors){
         if(door.locX==X && door.locY==Y){
             return &door;
@@ -93,13 +95,19 @@ Door* Map::getDoor(int X, int Y){
     return nullptr;
 }
 
-bool Map::isTileSolid(int X, int Y){
-    int tile=map.getTile(X,Y);
-    if(tile==0)return false;
-    if(tile==99) {
-        Door* door=map.getDoor(X,Y);
-        if (door->state!= DoorState::CLOSED) return false;
-        else return true;
+const Door* Map::getDoor(int X,int Y) const{
+    for(const auto& door:activeDoors){
+        if(door.locX==X && door.locY==Y){
+            return &door;
+        }
     }
+    return nullptr;
+}
+
+bool Map::isTileSolid(int X, int Y) const{
+
+    int tile=getTile(X,Y);
+
+    if(tile==0) return false;
     return true;
 }
