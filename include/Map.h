@@ -6,10 +6,10 @@ class Map{
 public:
     static const int WIDTH=100;
     static const int HEIGHT=100;
-    Map(bool random=false);
+    Map(bool random=false,bool isMaze=false);
 
     void generateRandom();
-
+    void generateMaze();
     int getTile(int x,int y) const;
 
     void update(int x,int y, int color);

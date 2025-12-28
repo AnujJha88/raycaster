@@ -67,12 +67,27 @@ void Engine::handleInput(Player &player, Map &map){
 }
 
 void Engine::render(  Map& map,const Player& player){
-    SDL_SetRenderDrawColor(renderer,30,30,30,255);
-    SDL_Rect ceilRect={0,0,SCREEN_WIDTH,SCREEN_HEIGHT/2};
-    SDL_RenderFillRect(renderer,&ceilRect);
-    SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255); // Light Gray
-    SDL_Rect floorRect = {0, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT / 2};
-    SDL_RenderFillRect(renderer, &floorRect);
+
+    for(int y=0;y<SCREEN_HEIGHT/2;y++){
+        float fogger=1.0f-((float)y/((float)SCREEN_HEIGHT/2.0f));
+
+        Uint8 r = static_cast<Uint8>(30 *fogger);
+        Uint8 g = static_cast<Uint8>(30 *fogger);
+        Uint8 b = static_cast<Uint8>(30 *fogger);
+
+        SDL_SetRenderDrawColor(renderer, r, g, b, 255);
+        SDL_RenderDrawLine(renderer, 0, y, SCREEN_WIDTH, y);
+    }
+    for(int y=SCREEN_HEIGHT/2;y<SCREEN_HEIGHT;y++){
+        float fogger=((float)(y-SCREEN_HEIGHT/2)/((float)SCREEN_HEIGHT/2.0f));
+
+        Uint8 r = static_cast<Uint8>(100 * fogger);
+        Uint8 g = static_cast<Uint8>(100 * fogger);
+        Uint8 b = static_cast<Uint8>(100 * fogger);
+
+        SDL_SetRenderDrawColor(renderer, r, g, b, 255);
+        SDL_RenderDrawLine(renderer, 0, y, SCREEN_WIDTH, y);
+    }
 
     for(int x=0;x<SCREEN_WIDTH;x++){
        double cameraX= -1+double(2*x)/(double(SCREEN_WIDTH));
@@ -180,6 +195,15 @@ void Engine::render(  Map& map,const Player& player){
             g/=2;
             b/=2;
         }
+
+        double maxDist=12.0f;
+        float intensity=1.0f-(perpWallDist/maxDist);
+        if (intensity<0.0f)intensity=0.0f;
+        if(intensity>1.0f)intensity=1.0f;
+        r=static_cast<Uint8>(r*intensity);
+        g=static_cast<Uint8>(g*intensity);
+        b=static_cast<Uint8>(b*intensity);
+
         SDL_SetRenderDrawColor(renderer, r, g, b, 255);
         SDL_RenderDrawLine(renderer, x, drawStart, x, drawEnd);
     }

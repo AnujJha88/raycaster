@@ -1,11 +1,10 @@
 #include "Map.h"
 #include <random>
 #include<cstring>
+#include<stack>
 
-
-Map::Map(bool random){
-    if(random)Map::generateRandom();
-    else{
+Map::Map(bool random,bool isMaze){
+        if(!random){
         int tempMap[WIDTH][HEIGHT] = {
             {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
             {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
@@ -41,6 +40,10 @@ Map::Map(bool random){
                 }
             }
         }
+    }
+    else{
+        if(isMaze)generateMaze();
+        else generateRandom();
     }
 }
 
@@ -94,6 +97,68 @@ if(worldMap[x][y] == 0){
                 }
             }
         }
+    }
+
+}
+
+void Map::generateMaze(){
+    activeDoors.clear();
+    //fill with walls then remove to make maze
+    for(int x=0;x<WIDTH;x++){
+        for(int y=0;y<HEIGHT;y++){
+            worldMap[x][y]=1;
+        }
+    }
+
+    std::stack<std::pair<int,int>> stack;
+    stack.push({19,11});
+    worldMap[19][11]=0;//starting point
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+
+    std::vector<std::pair<int,int>> dirs={{0,2},{0,-2},{2,0},{-2,0}};
+
+    while (!stack.empty()) {
+        std::pair<int, int> current = stack.top();
+        std::vector<std::pair<int, int>> neighbors;
+
+        for (auto d : dirs) {
+            int nx = current.first + d.first;
+            int ny = current.second + d.second;
+
+            if (nx > 0 && nx < WIDTH - 1 && ny > 0 && ny < HEIGHT - 1 && worldMap[nx][ny] == 1) {
+                neighbors.push_back({nx, ny});
+            }
+        }
+
+        if (!neighbors.empty()) {
+            std::uniform_int_distribution<> dist(0, static_cast<int>(neighbors.size() - 1));
+            std::pair<int, int> next = neighbors[dist(gen)];
+
+            int wallX = current.first + (next.first - current.first) / 2;
+            int wallY = current.second + (next.second - current.second) / 2;
+
+            worldMap[next.first][next.second] = 0;
+            worldMap[wallX][wallY] = 0;
+
+            stack.push(next);
+        } else {
+            stack.pop();
+        }
+
+        for(int x = 19; x <= 21; x++) {
+            for(int y = 11; y <= 13; y++) {
+                worldMap[x][y] = 0;
+            }
+        }//force clear spawn
+        std::uniform_int_distribution<> colorDist(1, 3);
+        for (int x = 0; x < WIDTH; x++) {
+            for (int y = 0; y < HEIGHT; y++) {
+                if (worldMap[x][y] > 0) worldMap[x][y] = colorDist(gen);
+        }
+
+    }
     }
 
 }

@@ -5,7 +5,7 @@
 int main(){
     Engine engine;
     Player player;
-    Map map(true);
+    Map map(true,true);
     if(!engine.init()){return 1;}
     while(engine.isRunning()){
                engine.handleInput(player,map);
