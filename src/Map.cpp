@@ -100,26 +100,23 @@ if(worldMap[x][y] == 0){
     }
 
 }
+void Map::generateMaze() {
+    activeDoors.clear(); //
 
-void Map::generateMaze(){
-    activeDoors.clear();
-    //fill with walls then remove to make maze
-    for(int x=0;x<WIDTH;x++){
-        for(int y=0;y<HEIGHT;y++){
-            worldMap[x][y]=1;
-        }
+    for(int x = 0; x < WIDTH; x++) {
+        for(int y = 0; y < HEIGHT; y++) {
+            worldMap[x][y] = 1;         }
     }
 
-    std::stack<std::pair<int,int>> stack;
-    stack.push({19,11});
-    worldMap[19][11]=0;//starting point
+    std::stack<std::pair<int, int>> stack;
+    stack.push({19, 11});
+    worldMap[19][11] = 0;
 
     std::random_device rd;
     std::mt19937 gen(rd());
+    std::vector<std::pair<int, int>> dirs = {{0, 2}, {0, -2}, {2, 0}, {-2, 0}};
 
-    std::vector<std::pair<int,int>> dirs={{0,2},{0,-2},{2,0},{-2,0}};
-
-    while (!stack.empty()) {
+     while (!stack.empty()) {
         std::pair<int, int> current = stack.top();
         std::vector<std::pair<int, int>> neighbors;
 
@@ -146,23 +143,24 @@ void Map::generateMaze(){
         } else {
             stack.pop();
         }
+    }
 
-        for(int x = 19; x <= 21; x++) {
-            for(int y = 11; y <= 13; y++) {
-                worldMap[x][y] = 0;
-            }
-        }//force clear spawn
-        std::uniform_int_distribution<> colorDist(1, 3);
-        for (int x = 0; x < WIDTH; x++) {
-            for (int y = 0; y < HEIGHT; y++) {
-                if (worldMap[x][y] > 0) worldMap[x][y] = colorDist(gen);
+    // Force clear the spawn area
+    for(int x = 19; x <= 21; x++) {
+        for(int y = 11; y <= 13; y++) {
+            worldMap[x][y] = 0;
         }
-
-    }
     }
 
+    std::uniform_int_distribution<> colorDist(1, 3);
+    for (int x = 0; x < WIDTH; x++) {
+        for (int y = 0; y < HEIGHT; y++) {
+            if (worldMap[x][y] > 0) {
+                worldMap[x][y] = colorDist(gen);
+            }
+        }
+    }
 }
-
 int Map::getTile(int x, int y) const{
     if(x<0||x>=WIDTH||y<0||y>=HEIGHT) return 0;
 

@@ -12,8 +12,8 @@ public:
     void move(double dx,double dy,const Map &map);
     void turn(double angle);
 
-    const double movement_speed=0.08;
-    const double turn_speed=0.05;
+    const double movement_speed=0.05;
+    const double turn_speed=0.02;
 
     void moveForward( const Map &map);
     void moveBackward( const Map &map);

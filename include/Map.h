@@ -4,8 +4,8 @@
 
 class Map{
 public:
-    static const int WIDTH=100;
-    static const int HEIGHT=100;
+    static const int WIDTH=25;
+    static const int HEIGHT=25;
     Map(bool random=false,bool isMaze=false);
 
     void generateRandom();
